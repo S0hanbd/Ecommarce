@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Shopcart | Premium Online Shopping{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Category Dropdown Styling */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #ffffff;
+      min-width: 200px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      padding: 10px 0;
+      z-index: 1000;
+      border: 1px solid var(--border-light);
+    }
+    .dropdown-content a {
+      color: var(--text-dark);
+      padding: 10px 20px;
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .dropdown-content a:hover {
+      background-color: #f5f6f6;
+      color: var(--color-brand-green);
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="container top-bar-container">
+      <div>
+        <i class="fa-solid fa-phone" style="margin-right: 6px;"></i> 
+        <a href="{% url 'contact' %}" style="color: inherit; margin-right: 12px;">Support: +001234567890</a> 
+        | &nbsp; Get 50% Off on Selected Items &nbsp;|&nbsp; 
+        <a href="{% url 'shop:deals_list' %}" style="text-decoration: underline; color: #ff7043; font-weight: 700;">Shop Deals</a>
+      </div>
+      <div class="top-bar-right">
+        <span style="cursor: pointer;">Eng <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></span>
+        <span style="cursor: pointer;">Location <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navbar Header -->
+  <header class="main-header">
+    <div class="container header-container">
+      
+      <!-- Brand Logo -->
+      <a href="{% url 'shop:product_list' %}" class="brand-logo">
+        <i class="fa-solid fa-cart-shopping"></i> Shopcart
+      </a>
+
+      <!-- Navigation Links -->
+      <ul class="nav-menu">
+        <li class="dropdown">
+          <a href="{% url 'shop:product_list' %}" class="nav-link">
+            Categories <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;"></i>
+          </a>
+          <div class="dropdown-content">
+            <a href="{% url 'shop:product_list' %}">All Categories</a>
+            {% for cat in all_categories %}
+              <a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+            {% endfor %}
+          </div>
+        </li>
+        <li><a href="{% url 'shop:deals_list' %}" class="nav-link">Deals</a></li>
+        <li><a href="{% url 'shop:product_list' %}?sort=newest" class="nav-link">What's New</a></li>
+        <li><a href="{% url 'delivery' %}" class="nav-link">Delivery</a></li>
+      </ul>
+
+      <!-- Header Search Input -->
+      <form action="{% url 'shop:product_list' %}" method="get" class="header-search">
+        <input type="text" name="q" placeholder="Search Product" class="search-input" value="{{ query|default:'' }}">
+        <button type="submit" class="search-icon-btn">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+
+      <!-- Wishlist, Account & Cart Actions -->
+      <div class="user-actions">
+        
+        <!-- Wishlist Icon -->
+        <a href="{% url 'shop:wishlist_detail' %}" class="action-btn" title="Saved Wishlist">
+          <i class="fa-regular fa-heart"></i>
+          {% if wishlist|length > 0 %}
+            <span class="cart-count-badge" style="background: #ff7043;">{{ wishlist|length }}</span>
+          {% endif %}
+        </a>
+
+        <!-- Account Menu -->
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'orders:my_orders' %}" class="action-btn">
+            <i class="fa-regular fa-user"></i> Account
+          </a>
+          <a href="{% url 'logout' %}" class="action-btn" title="Logout" style="color: var(--text-muted);">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}" class="action-btn">
+            <i class="fa-regular fa-user"></i> Account
+          </a>
+        {% endif %}
+
+        <!-- Cart Icon -->
+        <a href="{% url 'shop:cart_detail' %}" class="action-btn">
+          <i class="fa-solid fa-cart-shopping"></i> Cart
+          <span class="cart-count-badge">{{ cart|length }}</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Flash Messages -->
+  <div class="container" style="margin-top: 16px;">
+    {% if messages %}
+      {% for message in messages %}
+        <div style="padding: 12px 20px; background: #e0f2fe; color: #0369a1; border-radius: 8px; margin-bottom: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+          <span>{{ message }}</span>
+          <i class="fa-solid fa-xmark" onclick="this.parentElement.remove()" style="cursor: pointer;"></i>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- Main Page Content -->
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+      <div style="font-weight: 800; font-size: 1.3rem; color: var(--color-brand-green);">
+        <i class="fa-solid fa-cart-shopping" style="color: #ff7043;"></i> Shopcart
+      </div>
+      <div style="display: flex; gap: 24px; font-weight: 600; font-size: 0.9rem;">
+        <a href="{% url 'shop:product_list' %}">Shop</a>
+        <a href="{% url 'shop:deals_list' %}">Deals</a>
+        <a href="{% url 'delivery' %}">Delivery</a>
+        <a href="{% url 'contact' %}">Contact Support</a>
+        <a href="{% url 'about' %}">About Us</a>
+      </div>
+      <div>
+        &copy; {% now "Y" %} Shopcart Inc. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

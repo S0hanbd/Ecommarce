@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Placed - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; padding-top: 32px; padding-bottom: 60px;">
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 48px; text-align: center;">
+    
+    <div style="width: 70px; height: 70px; background: rgba(0, 138, 0, 0.1); border: 2px solid var(--color-star-green); border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+      <i class="fa-solid fa-check" style="font-size: 2rem; color: var(--color-star-green);"></i>
+    </div>
+
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-heading); margin-bottom: 8px;">Thank You for Your Order!</h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 28px;">Order <strong style="color: var(--text-heading);">#{{ order.id }}</strong> has been placed successfully.</p>
+
+    <!-- Receipt Details -->
+    <div style="background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 28px; text-align: left; margin-bottom: 32px;">
+      <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-heading); margin-bottom: 16px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">Receipt Summary</h4>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Customer Name:</span>
+        <strong style="color: var(--text-heading);">{{ order.full_name }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Email:</span>
+        <strong style="color: var(--text-heading);">{{ order.email }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Delivery Address:</span>
+        <strong style="color: var(--text-heading);">{{ order.address }}, {{ order.city }} ({{ order.postal_code }})</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 0.95rem;">
+        <span style="color: var(--text-muted);">Status:</span>
+        <span style="background: var(--color-brand-green); color: #ffffff; padding: 2px 12px; border-radius: var(--radius-pill); font-size: 0.82rem; font-weight: 700;">{{ order.status }}</span>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-light); padding-top: 16px;">
+        <h5 style="color: var(--text-heading); font-size: 0.95rem; font-weight: 700; margin-bottom: 12px;">Items Ordered:</h5>
+        {% for item in order.items.all %}
+          <div style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 8px;">
+            <span>{{ item.quantity }}x {{ item.product.name }}</span>
+            <span style="font-weight: 600; color: var(--text-heading);">${{ item.get_cost }}</span>
+          </div>
+        {% endfor %}
+        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.2rem; color: var(--color-brand-green); margin-top: 16px; border-top: 1px solid var(--border-light); padding-top: 12px;">
+          <span>Total Paid:</span>
+          <span>${{ order.total_price }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 16px;">
+      <a href="{% url 'shop:product_list' %}" class="btn-green-solid">Continue Shopping</a>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'orders:my_orders' %}" class="btn-outline">View My Orders</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

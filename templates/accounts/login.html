@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 480px; padding-top: 32px; padding-bottom: 60px;">
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 40px;">
+    
+    <div style="text-align: center; margin-bottom: 24px;">
+      <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-heading);">Welcome Back</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 6px;">Sign in to access your orders and saved preferences.</p>
+    </div>
+
+    <form action="" method="post">
+      {% csrf_token %}
+      
+      {% for field in form %}
+        <div class="form-group">
+          <label class="form-label">{{ field.label }}</label>
+          <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}" class="form-input" required>
+          {% if field.errors %}
+            <span style="color: #ef4444; font-size: 0.85rem; font-weight: 600;">{{ field.errors.0 }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn-green-solid" style="width: 100%; padding: 14px; margin-top: 12px; font-size: 1.05rem;">
+        Sign In <i class="fa-solid fa-right-to-bracket"></i>
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-light); font-size: 0.95rem; color: var(--text-muted);">
+      Don't have an account? <a href="{% url 'register' %}" style="color: var(--color-brand-green); font-weight: 700;">Register here</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

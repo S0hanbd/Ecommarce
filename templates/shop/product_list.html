@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopcart | Headphones & Electronics For You{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% if not category and not query and not sort and not price_range %}
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-text">
+      <h1 class="hero-title">Grab Upto 50% Off On Selected Headphone</h1>
+      <a href="{% url 'shop:deals_list' %}" class="btn-green-solid" style="padding: 14px 36px; font-size: 1.05rem;">
+        Buy Now
+      </a>
+    </div>
+    <div class="hero-img-box">
+      <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700&auto=format&fit=crop&q=80" alt="Featured Headphone">
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Popular Categories Grid -->
+  <h2 class="section-heading" style="font-size: 1.3rem; margin-bottom: 16px;">Popular Categories</h2>
+  <div class="category-card-grid">
+    <a href="{% url 'shop:product_list_by_category' 'electronics' %}" class="category-card">
+      <div class="category-icon"><i class="fa-solid fa-headphones"></i></div>
+      <div>
+        <div class="category-card-title">Headphone</div>
+        <div class="category-card-sub">240 Item Available</div>
+      </div>
+    </a>
+    <a href="{% url 'shop:product_list_by_category' 'fashion-apparel' %}" class="category-card">
+      <div class="category-icon"><i class="fa-solid fa-shoe-prints"></i></div>
+      <div>
+        <div class="category-card-title">Shoe</div>
+        <div class="category-card-sub">180 Item Available</div>
+      </div>
+    </a>
+    <a href="{% url 'shop:product_list_by_category' 'accessories' %}" class="category-card">
+      <div class="category-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+      <div>
+        <div class="category-card-title">Bag</div>
+        <div class="category-card-sub">120 Item Available</div>
+      </div>
+    </a>
+    <a href="{% url 'shop:product_list_by_category' 'home-living' %}" class="category-card">
+      <div class="category-icon"><i class="fa-solid fa-laptop"></i></div>
+      <div>
+        <div class="category-card-title">Laptop</div>
+        <div class="category-card-sub">210 Item Available</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Interactive Filter Pills Bar -->
+  <div class="filter-pills-bar" id="products-section">
+    <a href="{% url 'shop:product_list' %}" class="pill-filter {% if not category and not price_range and not sort %}active{% endif %}">
+      All Products
+    </a>
+    
+    {% for cat in all_categories %}
+      <a href="{{ cat.get_absolute_url }}" class="pill-filter {% if category and category.id == cat.id %}active{% endif %}">
+        {{ cat.name }}
+      </a>
+    {% endfor %}
+
+    <!-- Price Filter Dropdown -->
+    <div class="dropdown">
+      <span class="pill-filter {% if price_range %}active{% endif %}">
+        Price: {% if price_range == 'under_50' %}< $50{% elif price_range == '50_200' %}$50-$200{% elif price_range == 'over_200' %}> $200{% else %}All{% endif %} ⌄
+      </span>
+      <div class="dropdown-content">
+        <a href="?{% if category %}category={{ category.slug }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}">All Prices</a>
+        <a href="?price=under_50{% if category %}&category={{ category.slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Under $50</a>
+        <a href="?price=50_200{% if category %}&category={{ category.slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">$50 to $200</a>
+        <a href="?price=over_200{% if category %}&category={{ category.slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Over $200</a>
+      </div>
+    </div>
+
+    <!-- Sort Dropdown -->
+    <div class="dropdown" style="margin-left: auto;">
+      <span class="pill-filter {% if sort %}active{% endif %}">
+        Sort by: {% if sort == 'price_asc' %}Low to High{% elif sort == 'price_desc' %}High to Low{% elif sort == 'newest' %}Newest{% elif sort == 'name' %}Name{% else %}Featured{% endif %} ⌄
+      </span>
+      <div class="dropdown-content" style="right: 0; left: auto;">
+        <a href="?{% if price_range %}price={{ price_range }}&{% endif %}">Featured</a>
+        <a href="?sort=price_asc{% if price_range %}&price={{ price_range }}{% endif %}">Price: Low to High</a>
+        <a href="?sort=price_desc{% if price_range %}&price={{ price_range }}{% endif %}">Price: High to Low</a>
+        <a href="?sort=newest{% if price_range %}&price={{ price_range }}{% endif %}">Newest Arrivals</a>
+        <a href="?sort=name{% if price_range %}&price={{ price_range }}{% endif %}">Name (A-Z)</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Title -->
+  <h2 class="section-heading">
+    {% if query %}
+      Search Results for "{{ query }}"
+    {% elif category %}
+      {{ category.name }}
+    {% else %}
+      Headphones For You!
+    {% endif %}
+  </h2>
+
+  <!-- Products Grid -->
+  {% if products %}
+    <div class="products-grid">
+      {% for product in products %}
+        <div class="product-card">
+          <div class="product-img-box">
+            <!-- Wishlist Heart Button -->
+            <a href="{% url 'shop:wishlist_toggle' product.id %}" class="wishlist-btn" title="Toggle Wishlist">
+              {% if product.id in wishlist.wishlist %}
+                <i class="fa-solid fa-heart" style="color: #ef4444;"></i>
+              {% else %}
+                <i class="fa-regular fa-heart"></i>
+              {% endif %}
+            </a>
+
+            <a href="{{ product.get_absolute_url }}">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+              {% else %}
+                <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500&auto=format&fit=crop&q=80" alt="{{ product.name }}">
+              {% endif %}
+            </a>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <a href="{{ product.get_absolute_url }}">
+              <h3 class="product-card-title">{{ product.name }}</h3>
+            </a>
+            <div class="product-price-inline">${{ product.effective_price }}</div>
+          </div>
+
+          <p class="product-sub-desc">{{ product.description|truncatewords:6|default:"Premium build, fairtrade certified" }}</p>
+
+          <div class="rating-stars">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <span class="rating-count">(121)</span>
+          </div>
+
+          <form action="{% url 'shop:cart_add' product.id %}" method="post" style="margin-top: auto;">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <input type="hidden" name="override" value="False">
+            <button type="submit" class="btn-outline" style="width: 100%; font-size: 0.88rem; padding: 10px;">Add to Cart</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="padding: 60px; text-align: center; background: #f5f6f6; border-radius: 16px; margin: 20px 0;">
+      <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; color: #94a3b8; margin-bottom: 16px;"></i>
+      <h3 style="font-weight: 800;">No products match your search or filter</h3>
+      <a href="{% url 'shop:product_list' %}" class="btn-green-solid" style="margin-top: 20px;">Clear All Filters</a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

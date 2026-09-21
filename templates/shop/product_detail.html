@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Breadcrumbs -->
+  <div class="breadcrumb">
+    <a href="{% url 'shop:product_list' %}">Electronics</a> / 
+    <a href="{% url 'shop:product_list' %}">Audio</a> / 
+    <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> / 
+    <strong style="color: var(--text-heading);">{{ product.name }}</strong>
+  </div>
+
+  <div class="detail-container-grid">
+    
+    <!-- Left Column: Image Showcase -->
+    <div>
+      <div class="main-detail-img-box">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" id="main-product-img">
+        {% else %}
+          <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&auto=format&fit=crop&q=80" alt="{{ product.name }}" id="main-product-img">
+        {% endif %}
+      </div>
+
+      <!-- Thumbnails with JavaScript Click Handler -->
+      <div class="thumb-grid">
+        <div class="thumb-box" onclick="switchImage('https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&auto=format&fit=crop&q=80')">
+          <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200&auto=format&fit=crop&q=80" alt="thumb1">
+        </div>
+        <div class="thumb-box" onclick="switchImage('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80')">
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&auto=format&fit=crop&q=80" alt="thumb2">
+        </div>
+        <div class="thumb-box" onclick="switchImage('https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&auto=format&fit=crop&q=80')">
+          <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=200&auto=format&fit=crop&q=80" alt="thumb3">
+        </div>
+        <div class="thumb-box" onclick="switchImage('https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&auto=format&fit=crop&q=80')">
+          <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200&auto=format&fit=crop&q=80" alt="thumb4">
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Product Specs & Actions -->
+    <div>
+      <h1 class="detail-info-title">{{ product.name }}</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+        {{ product.description|default:"A perfect balance of exhilarating high-fidelity audio and effortless modern design." }}
+      </p>
+
+      <div class="rating-stars" style="margin: 12px 0 20px;">
+        <i class="fa-solid fa-star"></i>
+        <i class="fa-solid fa-star"></i>
+        <i class="fa-solid fa-star"></i>
+        <i class="fa-solid fa-star"></i>
+        <i class="fa-solid fa-star"></i>
+        <span class="rating-count">(121)</span>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); padding: 16px 0; margin-bottom: 24px;">
+        <div class="detail-price-box">
+          ${{ product.effective_price }} <span style="font-size: 1.1rem; font-weight: 600;">or 99.99/month</span>
+        </div>
+        <div class="detail-price-sub">Suggested payments with 6 months special financing</div>
+      </div>
+
+      <!-- Color Options -->
+      <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 8px;">Choose a Color</div>
+      <div class="color-options-row" id="color-swatches">
+        <span class="color-circle active" style="background: #e17055;" onclick="selectColor(this, 'Coral Red')"></span>
+        <span class="color-circle" style="background: #2d3436;" onclick="selectColor(this, 'Space Grey')"></span>
+        <span class="color-circle" style="background: #55efc4;" onclick="selectColor(this, 'Mint Green')"></span>
+        <span class="color-circle" style="background: #dfe6e9;" onclick="selectColor(this, 'Silver')"></span>
+        <span class="color-circle" style="background: #0984e3;" onclick="selectColor(this, 'Sky Blue')"></span>
+      </div>
+      <div id="selected-color-label" style="font-size: 0.85rem; color: var(--text-muted); margin-top: -16px; margin-bottom: 20px;">Selected: Coral Red</div>
+
+      <div style="border-top: 1px solid var(--border-light); padding-top: 24px;">
+        
+        <form action="{% url 'shop:cart_add' product.id %}" method="post" id="buy-form">
+          {% csrf_token %}
+          <input type="hidden" name="color" id="selected-color-input" value="Coral Red">
+          
+          <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px;">
+            <div class="qty-control-wrapper">
+              <button type="button" class="qty-btn" onclick="adjustQty(-1)">-</button>
+              <input type="number" name="quantity" id="id_qty_input" value="1" min="1" max="10" style="width: 32px; border: none; background: transparent; text-align: center; font-weight: 800; font-size: 1rem;">
+              <button type="button" class="qty-btn" onclick="adjustQty(1)">+</button>
+            </div>
+            <input type="hidden" name="override" value="False">
+
+            <div style="font-size: 0.85rem;">
+              <strong style="color: #ff7043;">Only {{ product.stock|default:12 }} Items Left!</strong>
+              <div style="color: var(--text-muted);">Don't miss it</div>
+            </div>
+          </div>
+
+          <!-- Dual Action Buttons -->
+          <div style="display: flex; gap: 16px;">
+            <button type="submit" formaction="{% url 'shop:buy_now' product.id %}" class="btn-green-solid" style="flex: 1; padding: 14px;">
+              Buy Now
+            </button>
+            <button type="submit" formaction="{% url 'shop:cart_add' product.id %}" class="btn-outline" style="flex: 1; padding: 14px; border-color: var(--color-brand-green); color: var(--color-brand-green);">
+              Add to Cart
+            </button>
+          </div>
+        </form>
+
+        <!-- Delivery Box & Postal Code Checker -->
+        <div class="delivery-box">
+          <div class="delivery-item">
+            <i class="fa-solid fa-truck-fast delivery-icon"></i>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; font-size: 0.95rem;">Free Delivery</div>
+              <div style="display: flex; gap: 8px; margin-top: 6px;">
+                <input type="text" id="postal-input" placeholder="Enter Postal Code (e.g. 10001)" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.82rem; flex: 1;">
+                <button type="button" onclick="checkDelivery()" class="btn-outline" style="padding: 4px 12px; font-size: 0.8rem;">Check</button>
+              </div>
+              <div id="postal-result" style="font-size: 0.82rem; margin-top: 6px; font-weight: 600;"></div>
+            </div>
+          </div>
+
+          <div class="delivery-item">
+            <i class="fa-solid fa-arrows-rotate delivery-icon"></i>
+            <div>
+              <div style="font-weight: 700; font-size: 0.95rem;">Return Delivery</div>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">Free 30days Delivery Returns. <a href="#" onclick="alert('Return Policy:\n\n1. Return within 30 days of purchase.\n2. Items must be in original condition with box.\n3. Free prepaid return shipping label provided.'); return false;" style="text-decoration: underline; color: var(--color-brand-green); font-weight: 600;">Details</a></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Similar Items Section -->
+  {% if related_products %}
+  <div style="margin-top: 60px; border-top: 1px solid var(--border-light); padding-top: 40px;">
+    <h2 class="section-heading" style="font-size: 1.5rem;">Similar Items You Might Like</h2>
+    <div class="products-grid">
+      {% for rel in related_products %}
+        <div class="product-card">
+          <div class="product-img-box">
+            <a href="{% url 'shop:wishlist_toggle' rel.id %}" class="wishlist-btn">
+              <i class="fa-regular fa-heart"></i>
+            </a>
+            <a href="{{ rel.get_absolute_url }}">
+              {% if rel.image %}
+                <img src="{{ rel.image.url }}" alt="{{ rel.name }}">
+              {% else %}
+                <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&auto=format&fit=crop&q=80" alt="{{ rel.name }}">
+              {% endif %}
+            </a>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <a href="{{ rel.get_absolute_url }}"><h3 class="product-card-title">{{ rel.name }}</h3></a>
+            <div class="product-price-inline">${{ rel.effective_price }}</div>
+          </div>
+
+          <p class="product-sub-desc">{{ rel.description|truncatewords:5 }}</p>
+
+          <div class="rating-stars">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <span class="rating-count">(121)</span>
+          </div>
+
+          <form action="{% url 'shop:cart_add' rel.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="btn-outline" style="width: 100%; font-size: 0.85rem; padding: 8px;">Add to Cart</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recently Viewed Products -->
+  {% if recently_viewed_products %}
+  <div style="margin-top: 40px; border-top: 1px solid var(--border-light); padding-top: 40px;">
+    <h2 class="section-heading" style="font-size: 1.5rem;">Recently Viewed</h2>
+    <div class="products-grid">
+      {% for item in recently_viewed_products %}
+        <div class="product-card">
+          <div class="product-img-box">
+            <a href="{{ item.get_absolute_url }}">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}">
+              {% else %}
+                <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&auto=format&fit=crop&q=80" alt="{{ item.name }}">
+              {% endif %}
+            </a>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <a href="{{ item.get_absolute_url }}"><h3 class="product-card-title">{{ item.name }}</h3></a>
+            <div class="product-price-inline">${{ item.effective_price }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+function switchImage(src) {
+  document.getElementById('main-product-img').src = src;
+}
+
+function selectColor(el, name) {
+  let circles = document.querySelectorAll('.color-circle');
+  circles.forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('selected-color-label').innerText = 'Selected: ' + name;
+  let colorInput = document.getElementById('selected-color-input');
+  if (colorInput) {
+    colorInput.value = name;
+  }
+}
+
+function adjustQty(amount) {
+  let q = document.getElementById('id_qty_input');
+  let current = parseInt(q.value) || 1;
+  let next = current + amount;
+  if (next >= 1 && next <= 10) {
+    q.value = next;
+  }
+}
+
+function checkDelivery() {
+  let val = document.getElementById('postal-input').value.trim();
+  let res = document.getElementById('postal-result');
+  if (val.length >= 4) {
+    res.style.color = '#008a00';
+    res.innerText = '✓ Delivery available! Free delivery estimated by tomorrow.';
+  } else {
+    res.style.color = '#ef4444';
+    res.innerText = 'Please enter a valid postal code.';
+  }
+}
+</script>
+{% endblock %}

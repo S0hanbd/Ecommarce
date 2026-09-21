@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="section-heading" style="margin: 24px 0;">Checkout & Shipping</h1>
+
+  <div class="checkout-grid">
+    
+    <!-- Delivery Information Form -->
+    <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 32px;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 24px; color: var(--color-brand-green);">
+        <i class="fa-solid fa-truck-fast"></i> Delivery Information
+      </h3>
+
+      <form action="" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          {{ form.full_name }}
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mobile</label>
+            {{ form.phone }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Delivery Address</label>
+          {{ form.address }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            {{ form.city }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Zip Code</label>
+            {{ form.postal_code }}
+          </div>
+        </div>
+
+        <!-- Payment Details Options -->
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-light);">
+          <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 14px;">Select Payment Method</h4>
+          
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer;">
+              <input type="radio" name="payment_method" value="cod" checked onclick="toggleCardFields(false)"> Cash on Delivery (COD)
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer;">
+              <input type="radio" name="payment_method" value="card" onclick="toggleCardFields(true)"> Credit / Debit Card (Visa, Mastercard, Amex)
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer;">
+              <input type="radio" name="payment_method" value="paypal" onclick="toggleCardFields(false)"> PayPal / Online Wallet
+            </label>
+          </div>
+
+          <!-- Card Input Fields Container -->
+          <div id="card-fields" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+              <label class="form-label">Cardholder Name</label>
+              <input type="text" class="form-input" placeholder="Name on card">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Card Number</label>
+              <input type="text" class="form-input" placeholder="1234 5678 9101 1121">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <label class="form-label">Expiry Date</label>
+                <input type="text" class="form-input" placeholder="MM/YY">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVV Security Code</label>
+                <input type="password" class="form-input" placeholder="123">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn-green-solid" style="width: 100%; padding: 14px; font-size: 1.05rem;">
+          Place Order (${{ cart.get_total_price }}) <i class="fa-solid fa-lock"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Order Summary Column -->
+    <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; height: fit-content;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 20px;">Order Summary</h3>
+
+      <div style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        {% for item in cart %}
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;">
+            <div>
+              <strong style="color: var(--text-heading);">{{ item.product.name }}</strong>
+              <div style="color: var(--text-muted); font-size: 0.8rem;">Qty: {{ item.quantity }} × ${{ item.price }}</div>
+            </div>
+            <span style="font-weight: 700; color: var(--color-brand-green);">${{ item.total_price }}</span>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div style="border-top: 1px solid var(--border-light); padding-top: 16px;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 8px;">
+          <span>Subtotal</span>
+          <strong style="color: var(--text-heading);">${{ cart.get_total_price }}</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 8px;">
+          <span>Delivery</span>
+          <strong style="color: var(--color-star-green);">FREE</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: var(--color-brand-green); border-top: 1px solid var(--border-light); padding-top: 12px; margin-top: 8px;">
+          <span>Total</span>
+          <span>${{ cart.get_total_price }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleCardFields(show) {
+  document.getElementById('card-fields').style.display = show ? 'block' : 'none';
+}
+</script>
+{% endblock %}

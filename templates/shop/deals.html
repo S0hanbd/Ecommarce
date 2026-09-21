@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Hot Deals & Special Offers - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  <div class="hero-section" style="background: linear-gradient(135deg, #003d29 0%, #004d34 100%); color: #fff; padding: 40px 60px;">
+    <div class="hero-text">
+      <span style="background: #ff7043; color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">Limited Time</span>
+      <h1 class="hero-title" style="color: #fff; margin-top: 10px;">Exclusive Deals & Discounts</h1>
+      <p style="color: #e2e8f0; font-size: 1.05rem;">Save up to 50% off on top-rated headphones, audio gear, and laptops with free delivery on all orders.</p>
+    </div>
+  </div>
+
+  <h2 class="section-heading">Featured On-Sale Items</h2>
+
+  <div class="products-grid">
+    {% for product in products %}
+      <div class="product-card">
+        <div class="product-img-box">
+          <span style="position: absolute; top: 12px; left: 12px; background: #ff7043; color: #fff; font-weight: 800; font-size: 0.75rem; padding: 3px 10px; border-radius: 999px;">DEAL</span>
+          <a href="{% url 'shop:wishlist_toggle' product.id %}" class="wishlist-btn">
+            <i class="fa-regular fa-heart"></i>
+          </a>
+          <a href="{{ product.get_absolute_url }}">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&auto=format&fit=crop&q=80" alt="{{ product.name }}">
+            {% endif %}
+          </a>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <a href="{{ product.get_absolute_url }}">
+            <h3 class="product-card-title">{{ product.name }}</h3>
+          </a>
+          <div class="product-price-inline">${{ product.effective_price }}</div>
+        </div>
+
+        <p class="product-sub-desc">{{ product.description|truncatewords:6 }}</p>
+
+        <div class="rating-stars">
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <span class="rating-count">(121)</span>
+        </div>
+
+        <form action="{% url 'shop:cart_add' product.id %}" method="post" style="margin-top: auto;">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit" class="btn-green-solid" style="width: 100%; font-size: 0.88rem;">Add to Cart</button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Support - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+  <h1 class="section-heading" style="margin: 24px 0; text-align: center;">Contact Shopcart Support</h1>
+
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 40px;">
+    
+    <form action="{% url 'contact' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" name="name" class="form-input" placeholder="John Doe" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-input" placeholder="john@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Message / Inquiry</label>
+        <textarea name="message" class="form-input" rows="5" placeholder="How can we help you today?" required style="resize: vertical;"></textarea>
+      </div>
+
+      <button type="submit" class="btn-green-solid" style="width: 100%; padding: 14px; margin-top: 12px;">
+        Send Message <i class="fa-regular fa-paper-plane"></i>
+      </button>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

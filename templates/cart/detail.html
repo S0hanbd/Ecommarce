@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Items & Cart - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="section-heading" style="margin: 24px 0;">Review Items And Shipping</h1>
+
+  {% if cart %}
+    <div style="display: grid; grid-template-columns: 1fr 380px; gap: 40px;">
+      
+      <!-- Cart Table -->
+      <div>
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Total</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart %}
+              {% with product=item.product %}
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                      <div style="width: 70px; height: 70px; background: var(--bg-card-img); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 6px;">
+                        {% if product.image %}
+                          <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        {% else %}
+                          <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=100&auto=format&fit=crop&q=80" alt="{{ product.name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        {% endif %}
+                      </div>
+                      <div>
+                        <a href="{{ product.get_absolute_url }}" style="font-weight: 700; color: var(--text-heading);">{{ product.name }}</a>
+                        <div style="font-size: 0.82rem; color: var(--text-muted);">{{ product.category.name }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <form action="{% url 'shop:cart_add' product.id %}" method="post" style="display: flex; align-items: center; gap: 6px;">
+                      {% csrf_token %}
+                      <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="10" style="width: 44px; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; text-align: center; font-weight: 700;">
+                      <input type="hidden" name="override" value="True">
+                      <button type="submit" class="btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">Update</button>
+                    </form>
+                  </td>
+                  <td style="font-weight: 600;">${{ item.price }}</td>
+                  <td style="font-weight: 800; color: var(--color-brand-green); font-size: 1.05rem;">${{ item.total_price }}</td>
+                  <td>
+                    <form action="{% url 'shop:cart_remove' product.id %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem;" title="Remove Item">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endwith %}
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Promo Code Section -->
+        <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 14px; padding: 20px; max-width: 480px; margin-top: 24px;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 10px;">Have a Promo Code / Coupon?</h4>
+          <form action="{% url 'shop:apply_coupon' %}" method="post" style="display: flex; gap: 10px;">
+            {% csrf_token %}
+            <input type="text" name="code" placeholder="Try 'SAVE10' or 'DISCOUNT20'" class="form-input" style="flex: 1; padding: 8px 14px;" value="{{ coupon.code|default:'' }}">
+            <button type="submit" class="btn-green-solid" style="padding: 8px 18px; font-size: 0.9rem;">Apply</button>
+          </form>
+          {% if coupon %}
+            <div style="color: var(--color-star-green); font-size: 0.85rem; font-weight: 700; margin-top: 8px;">
+              ✓ Coupon {{ coupon.code }} applied ({{ coupon.discount }}% OFF)
+            </div>
+          {% endif %}
+        </div>
+
+        <div style="margin-top: 24px;">
+          <a href="{% url 'shop:product_list' %}" class="btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- Order Summary Card -->
+      <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; height: fit-content;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 20px;">Order Summary</h3>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: var(--text-muted);">
+          <span>Subtotal</span>
+          <strong style="color: var(--text-heading);">${{ cart.get_total_price }}</strong>
+        </div>
+
+        {% if coupon %}
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: var(--color-star-green);">
+            <span>Discount ({{ coupon.discount }}%)</span>
+            <strong>-${{ discount_amount|floatformat:2 }}</strong>
+          </div>
+        {% endif %}
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: var(--text-muted);">
+          <span>Delivery Fee</span>
+          <strong style="color: var(--color-star-green);">FREE</strong>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-light); padding-top: 16px; margin-top: 16px; display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800;">
+          <span>Total</span>
+          <span style="color: var(--color-brand-green);">${{ final_price|floatformat:2 }}</span>
+        </div>
+
+        <a href="{% url 'orders:order_create' %}" class="btn-green-solid" style="width: 100%; margin-top: 24px; padding: 14px;">
+          Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+    </div>
+  {% else %}
+    <div style="padding: 60px; text-align: center; background: #f5f6f6; border-radius: 16px; margin: 40px 0;">
+      <i class="fa-solid fa-cart-arrow-down" style="font-size: 3.5rem; color: #94a3b8; margin-bottom: 16px;"></i>
+      <h2 style="font-weight: 800;">Your Shopcart is empty</h2>
+      <p style="color: var(--text-muted); margin: 8px 0 24px;">Explore our collection to add items to your cart.</p>
+      <a href="{% url 'shop:product_list' %}" class="btn-green-solid">Shop Now</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

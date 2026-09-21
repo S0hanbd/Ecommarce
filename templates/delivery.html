@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Delivery Information - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+  <h1 class="section-heading" style="margin: 24px 0;">Delivery & Shipping Policy</h1>
+
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 20px; padding: 40px;">
+    
+    <div style="display: flex; gap: 20px; margin-bottom: 32px; border-bottom: 1px solid var(--border-light); padding-bottom: 24px;">
+      <div style="font-size: 2.5rem; color: var(--color-brand-green);"><i class="fa-solid fa-truck-fast"></i></div>
+      <div>
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;">Free Standard Shipping</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">We offer free standard shipping on all orders nationwide. Orders placed before 3 PM EST are processed the same business day.</p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-bottom: 32px; border-bottom: 1px solid var(--border-light); padding-bottom: 24px;">
+      <div style="font-size: 2.5rem; color: #ff7043;"><i class="fa-solid fa-bolt"></i></div>
+      <div>
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;">Express 2-Day Delivery</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Need your gear faster? Select Express Delivery at checkout for guaranteed 2-day doorstep arrival with live SMS tracking.</p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px;">
+      <div style="font-size: 2.5rem; color: var(--color-brand-green);"><i class="fa-solid fa-arrows-rotate"></i></div>
+      <div>
+        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;">Hassle-Free 30-Day Returns</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">If you're not 100% satisfied with your order, return it within 30 days for a full refund or instant replacement. No hidden restocking fees.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px; text-align: center;">
+      <a href="{% url 'shop:product_list' %}" class="btn-green-solid">Shop Catalog Now</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

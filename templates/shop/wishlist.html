@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}My Wishlist - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="section-heading" style="margin: 24px 0;">My Saved Wishlist</h1>
+
+  {% if wishlist %}
+    <div class="products-grid">
+      {% for product in wishlist %}
+        <div class="product-card">
+          <div class="product-img-box">
+            <a href="{% url 'shop:wishlist_toggle' product.id %}" class="wishlist-btn" style="color: #ef4444;" title="Remove from Wishlist">
+              <i class="fa-solid fa-heart"></i>
+            </a>
+            <a href="{{ product.get_absolute_url }}">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+              {% else %}
+                <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&auto=format&fit=crop&q=80" alt="{{ product.name }}">
+              {% endif %}
+            </a>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <a href="{{ product.get_absolute_url }}">
+              <h3 class="product-card-title">{{ product.name }}</h3>
+            </a>
+            <div class="product-price-inline">${{ product.effective_price }}</div>
+          </div>
+
+          <p class="product-sub-desc">{{ product.description|truncatewords:6 }}</p>
+
+          <form action="{% url 'shop:cart_add' product.id %}" method="post" style="margin-top: auto;">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="btn-green-solid" style="width: 100%; font-size: 0.88rem;">
+              Move to Cart <i class="fa-solid fa-cart-shopping"></i>
+            </button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="padding: 60px; text-align: center; background: #f5f6f6; border-radius: 16px; margin: 40px 0;">
+      <i class="fa-regular fa-heart" style="font-size: 3.5rem; color: #94a3b8; margin-bottom: 16px;"></i>
+      <h2 style="font-weight: 800;">Your Wishlist is empty</h2>
+      <p style="color: var(--text-muted); margin: 8px 0 24px;">Click the heart icon on any product card to save it for later.</p>
+      <a href="{% url 'shop:product_list' %}" class="btn-green-solid">Explore Store</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

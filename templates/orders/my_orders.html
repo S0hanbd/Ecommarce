@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - Shopcart{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 24px; padding-bottom: 60px;">
+  <h1 class="section-heading" style="margin-bottom: 24px;">My Orders</h1>
+
+  {% if orders %}
+    <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 16px; overflow: hidden;">
+      <table class="cart-table" style="margin-bottom: 0;">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+            <tr>
+              <td style="font-weight: 800; color: var(--text-heading);">#{{ order.id }}</td>
+              <td style="color: var(--text-muted); font-size: 0.9rem;">{{ order.created_at|date:"N j, Y, P" }}</td>
+              <td>
+                <div style="font-size: 0.92rem; color: var(--text-heading);">
+                  {% for item in order.items.all %}
+                    <div style="margin-bottom: 2px;">{{ item.quantity }}x {{ item.product.name }}</div>
+                  {% endfor %}
+                </div>
+              </td>
+              <td style="font-weight: 800; color: var(--color-brand-green); font-size: 1.05rem;">${{ order.total_price }}</td>
+              <td>
+                <span style="background: var(--color-brand-green); color: #ffffff; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 700;">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td>
+                <a href="{% url 'orders:order_success' order.id %}" class="btn-outline" style="padding: 6px 14px; font-size: 0.85rem;">View Invoice</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="background: var(--bg-secondary); padding: 60px 40px; text-align: center; border-radius: 16px; border: 1px solid var(--border-light); margin: 20px 0;">
+      <i class="fa-solid fa-receipt" style="font-size: 3.5rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+      <h2 style="font-weight: 800;">No orders yet</h2>
+      <p style="color: var(--text-muted); margin-top: 8px; margin-bottom: 24px;">You haven't placed any orders with this account yet.</p>
+      <a href="{% url 'shop:product_list' %}" class="btn-green-solid">Browse Catalog</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

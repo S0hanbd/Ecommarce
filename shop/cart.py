@@ -36,9 +36,10 @@ class Cart:
             self.save()
 
     def __iter__(self):
+        import copy
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
-        cart_copy = self.cart.copy()
+        cart_copy = copy.deepcopy(self.cart)
 
         for product in products:
             cart_copy[str(product.id)]['product'] = product

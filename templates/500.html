@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}500 - Server Error | Shopcart{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 80px 20px; text-align: center; max-width: 650px; margin: 0 auto;">
+  <div style="font-size: 5rem; font-weight: 900; color: #ef4444; line-height: 1; margin-bottom: 20px;">
+    500
+  </div>
+  <div style="font-size: 1.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 16px;">
+    Something Went Wrong
+  </div>
+  <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6; margin-bottom: 32px;">
+    We encountered an unexpected issue while processing your request. Our engineering team has been notified.
+  </p>
+  <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+    <a href="{% url 'shop:product_list' %}" class="btn-primary" style="padding: 12px 28px; font-weight: 700;">
+      <i class="fa-solid fa-house" style="margin-right: 8px;"></i> Return to Homepage
+    </a>
+    <a href="{% url 'shop:cart_detail' %}" class="btn-secondary" style="padding: 12px 28px; font-weight: 700;">
+      <i class="fa-solid fa-cart-shopping" style="margin-right: 8px;"></i> View Cart
+    </a>
+  </div>
+</div>
+{% endblock %}

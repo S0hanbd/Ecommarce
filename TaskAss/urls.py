@@ -19,3 +19,9 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler400 = 'TaskAss.views.custom_bad_request_view'
+handler403 = 'TaskAss.views.custom_permission_denied_view'
+handler404 = 'TaskAss.views.custom_page_not_found_view'
+handler500 = 'TaskAss.views.custom_server_error_view'
+
